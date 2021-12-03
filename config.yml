@@ -1,0 +1,48 @@
+# секция с общими параметрами кластера (ClusterConfiguration)
+# используемая версия API Deckhouse Platform
+apiVersion: deckhouse.io/v1
+# тип секции конфигурации
+kind: ClusterConfiguration
+# тип инфраструктуры: bare metal (Static) или облако (Cloud)
+clusterType: Static
+# адресное пространство Pod’ов кластера
+podSubnetCIDR: 10.111.0.0/16
+# адресное пространство для service’ов кластера
+serviceSubnetCIDR: 10.222.0.0/16
+# устанавливаемая версия Kubernetes
+kubernetesVersion: "1.21"
+# домен кластера
+clusterDomain: "cluster.local"
+---
+# секция первичной инициализации кластера Deckhouse (InitConfiguration)
+# используемая версия API Deckhouse
+apiVersion: deckhouse.io/v1
+# тип секции конфигурации
+kind: InitConfiguration
+# секция с параметрами Deckhouse
+deckhouse:
+  # используемый канал обновлений
+  releaseChannel: Stable
+  configOverrides:
+    global:
+      modules:
+        # шаблон, который будет использоваться для составления адресов системных приложений в кластере
+        # например, Grafana для %s.example.com будет доступна на домене grafana.example.com
+        publicDomainTemplate: "%s.deckhouse.local"
+    # включить модуль cni-flannel
+    cniFlannelEnabled: true
+    # настройки модуля cni-flannel
+    cniFlannel:
+      # режим работы flannel, допустимые значения VXLAN (если ваши сервера имеют связность L3) или HostGW (для L2-сетей)
+      # возможно, захотите изменить
+      podNetworkMode: VXLAN
+---
+# секция с параметрами bare metal кластера (StaticClusterConfiguration)
+# используемая версия API Deckhouse
+apiVersion: deckhouse.io/v1
+# тип секции конфигурации
+kind: StaticClusterConfiguration
+# cписок внутренних сетей узлов кластера (например, '10.0.4.0/24'), который
+# используется для связи компонентов Kubernetes (kube-apiserver, kubelet...) между собой
+internalNetworkCIDRs:
+  - 192.168.56.0/24

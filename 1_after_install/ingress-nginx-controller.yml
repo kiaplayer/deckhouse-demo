@@ -1,0 +1,21 @@
+# секция, описывающая параметры nginx ingress controller
+# используемая версия API Deckhouse
+---
+apiVersion: deckhouse.io/v1
+kind: IngressNginxController
+metadata:
+  name: nginx
+spec:
+  # имя Ingress-класса для обслуживания Ingress NGINX controller
+  ingressClass: nginx
+  # способ поступления трафика из внешнего мира
+  inlet: HostPort
+  hostPort:
+    httpPort: 80
+    httpsPort: 443
+  # описывает, на каких узлах будет находиться компонент
+  # возможно, захотите изменить
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  tolerations:
+    - operator: Exists
